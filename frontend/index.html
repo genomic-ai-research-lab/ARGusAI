@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARG Alignment Tool</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="panel">
+        <h2>Upload Panel</h2>
+        <p>Upload a FASTA file and run DIAMOND alignment.</p>
+
+        <label for="fastaFile">FASTA File</label>
+        <input id="fastaFile" type="file" accept=".fasta,.fa,.fna,.txt" />
+
+        <label for="evalue">E-value Threshold</label>
+        <input id="evalue" type="number" value="1e-5" step="any" />
+
+        <label for="program">Program</label>
+        <select id="program">
+          <option value="blastx" selected>blastx (DNA -> Protein)</option>
+          <option value="blastp">blastp (Protein -> Protein)</option>
+        </select>
+
+        <button id="startBtn">Start Alignment</button>
+      </section>
+
+      <section class="panel">
+        <h2>Status Panel</h2>
+        <div class="status-row"><span>Status:</span><strong id="statusText">idle</strong></div>
+        <div class="status-row"><span>Stage:</span><strong id="stageText">not_started</strong></div>
+        <div class="status-row error"><span>Error:</span><strong id="errorText"></strong></div>
+        <div class="stage-list">
+          <div class="stage-item" id="stage-alignment">Alignment</div>
+          <div class="stage-item" id="stage-retrieval">Retrieval</div>
+          <div class="stage-item" id="stage-reasoning">Reasoning</div>
+        </div>
+      </section>
+
+      <section class="panel wide">
+        <h2>Results Panel</h2>
+        <p>Detected candidate hits: <strong id="hitCount">0</strong></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Gene Name</th>
+                <th>Identity %</th>
+                <th>E-Value</th>
+                <th>Score</th>
+                <th>Subject ID</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
