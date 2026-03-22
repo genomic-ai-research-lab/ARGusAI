@@ -3,62 +3,328 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ARG Alignment Tool</title>
+    <title>ARGusAI — Resistance Gene Alignment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+
+    <!-- Background canvas for animated particles -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Header -->
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="13" stroke="url(#logoGrad)" stroke-width="2"/>
+              <path d="M8 14 Q11 8 14 14 Q17 20 20 14" stroke="url(#logoGrad)" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <circle cx="8" cy="14" r="2" fill="url(#logoGrad)"/>
+              <circle cx="20" cy="14" r="2" fill="url(#logoGrad)"/>
+              <defs>
+                <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#38bdf8"/>
+                  <stop offset="100%" stop-color="#818cf8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-name">ARGusAI</span>
+            <span class="logo-sub">Resistance Gene Framework</span>
+          </div>
+        </div>
+        <div class="header-badge">
+          <span class="badge-dot"></span>
+          <span>DIAMOND v2 Engine</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main layout -->
     <main class="layout">
-      <section class="panel">
-        <h2>Upload Panel</h2>
-        <p>Upload a FASTA file and run DIAMOND alignment.</p>
 
-        <label for="fastaFile">FASTA File</label>
-        <input id="fastaFile" type="file" accept=".fasta,.fa,.fna,.txt" />
+      <!-- Upload Panel -->
+      <section class="card" id="upload-card">
+        <div class="card-header">
+          <div class="card-icon upload-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Upload &amp; Configure</h2>
+            <p class="card-desc">Submit a FASTA sequence for alignment</p>
+          </div>
+        </div>
 
-        <label for="evalue">E-value Threshold</label>
-        <input id="evalue" type="number" value="1e-5" step="any" />
+        <div class="form-group">
+          <label for="fastaFile">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            FASTA File
+          </label>
+          <div class="file-drop-zone" id="dropZone">
+            <input id="fastaFile" type="file" accept=".fasta,.fa,.fna,.txt" />
+            <div class="drop-content" id="dropContent">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <p class="drop-primary">Drop your FASTA file here</p>
+              <p class="drop-secondary">or <span class="drop-link">browse files</span> · .fasta .fa .fna .txt</p>
+            </div>
+          </div>
+        </div>
 
-        <label for="program">Program</label>
-        <select id="program">
-          <option value="blastx" selected>blastx (DNA -> Protein)</option>
-          <option value="blastp">blastp (Protein -> Protein)</option>
-        </select>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="evalue">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              E-value Threshold
+            </label>
+            <input id="evalue" class="form-input" type="number" value="1e-5" step="any" placeholder="e.g. 1e-5" />
+          </div>
 
-        <button id="startBtn">Start Alignment</button>
+          <div class="form-group">
+            <label for="program">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Alignment Program
+            </label>
+            <div class="select-wrap">
+              <select id="program" class="form-input">
+                <option value="blastx" selected>blastx — DNA → Protein</option>
+                <option value="blastp">blastp — Protein → Protein</option>
+              </select>
+              <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <button id="startBtn" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span>Run Alignment</span>
+          <div class="btn-shimmer"></div>
+        </button>
       </section>
 
-      <section class="panel">
-        <h2>Status Panel</h2>
-        <div class="status-row"><span>Status:</span><strong id="statusText">idle</strong></div>
-        <div class="status-row"><span>Stage:</span><strong id="stageText">not_started</strong></div>
-        <div class="status-row error"><span>Error:</span><strong id="errorText"></strong></div>
-        <div class="stage-list">
-          <div class="stage-item" id="stage-alignment">Alignment</div>
-          <div class="stage-item" id="stage-retrieval">Retrieval</div>
-          <div class="stage-item" id="stage-reasoning">Reasoning</div>
+      <!-- Status Panel -->
+      <section class="card" id="status-card">
+        <div class="card-header">
+          <div class="card-icon status-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Pipeline Status</h2>
+            <p class="card-desc">Real-time job monitoring</p>
+          </div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-cell">
+            <span class="status-label">Status</span>
+            <span class="status-value" id="statusText">
+              <span class="status-dot idle"></span>idle
+            </span>
+          </div>
+          <div class="status-cell">
+            <span class="status-label">Stage</span>
+            <span class="status-value mono" id="stageText">not_started</span>
+          </div>
+        </div>
+
+        <div class="error-box" id="errorBox" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="errorText"></span>
+        </div>
+
+        <div class="pipeline">
+          <div class="pipeline-label">Pipeline Stages</div>
+          <div class="pipeline-track">
+            <div class="pipeline-connector"></div>
+            <div class="stage-node" id="stage-alignment">
+              <div class="stage-dot">
+                <svg class="stage-check" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div class="stage-spinner"></div>
+              </div>
+              <span class="stage-label">Alignment</span>
+            </div>
+            <div class="stage-node" id="stage-retrieval">
+              <div class="stage-dot">
+                <svg class="stage-check" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div class="stage-spinner"></div>
+              </div>
+              <span class="stage-label">Retrieval</span>
+            </div>
+            <div class="stage-node" id="stage-reasoning">
+              <div class="stage-dot">
+                <svg class="stage-check" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div class="stage-spinner"></div>
+              </div>
+              <span class="stage-label">Reasoning</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="panel wide">
-        <h2>Results Panel</h2>
-        <p>Detected candidate hits: <strong id="hitCount">0</strong></p>
+      <!-- Results Panel -->
+      <section class="card wide" id="results-card">
+        <div class="card-header">
+          <div class="card-icon results-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="3" y1="15" x2="21" y2="15"/>
+              <line x1="9" y1="9" x2="9" y2="21"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Alignment Results</h2>
+            <p class="card-desc">Candidate resistance gene hits</p>
+          </div>
+          <div class="hit-badge" id="hitBadge">
+            <span id="hitCount">0</span>
+            <span>hits</span>
+          </div>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Gene Name</th>
-                <th>Identity %</th>
-                <th>E-Value</th>
-                <th>Score</th>
-                <th>Subject ID</th>
+                <th>
+                  <span class="th-inner">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    Gene Name
+                  </span>
+                </th>
+                <th>
+                  <span class="th-inner">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Identity %
+                  </span>
+                </th>
+                <th>
+                  <span class="th-inner">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    E-Value
+                  </span>
+                </th>
+                <th>
+                  <span class="th-inner">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    Score
+                  </span>
+                </th>
+                <th>
+                  <span class="th-inner">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    Subject ID
+                  </span>
+                </th>
               </tr>
             </thead>
-            <tbody id="resultsBody"></tbody>
+            <tbody id="resultsBody">
+              <tr class="empty-row">
+                <td colspan="5">
+                  <div class="empty-state">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="11" cy="11" r="8"/>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <p>No results yet — run an alignment to see hits</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </section>
+
     </main>
 
     <script type="module" src="app.js"></script>
+    <script>
+      // Background canvas animation
+      const canvas = document.getElementById('bgCanvas');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      for (let i = 0; i < 60; i++) {
+        particles.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          r: Math.random() * 1.5 + 0.3,
+          dx: (Math.random() - 0.5) * 0.3,
+          dy: (Math.random() - 0.5) * 0.3,
+          alpha: Math.random() * 0.4 + 0.1
+        });
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
+          ctx.fill();
+          p.x += p.dx;
+          p.y += p.dy;
+          if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+        });
+        requestAnimationFrame(drawParticles);
+      }
+      drawParticles();
+
+      // File drop zone
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fastaFile');
+      const dropContent = document.getElementById('dropContent');
+
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+          updateDropLabel(file.name);
+        }
+      });
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) updateDropLabel(fileInput.files[0].name);
+      });
+      function updateDropLabel(name) {
+        dropContent.innerHTML = `
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <p class="drop-primary" style="color:#38bdf8">${name}</p>
+          <p class="drop-secondary">File selected · click to change</p>
+        `;
+        dropZone.classList.add('has-file');
+      }
+    </script>
   </body>
 </html>
