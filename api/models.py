@@ -39,6 +39,7 @@ class HitResponse(BaseModel):
     confidence: int = 0
     resistance_summary: str = ""
     drug_impacts: list[str] = Field(default_factory=list)
+    limitations_and_fixes: str = ""
 
 
 class ResultsResponse(BaseModel):

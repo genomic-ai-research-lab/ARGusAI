@@ -119,6 +119,10 @@ function renderResults(hits, report = null) {
     const resistanceSummary = hit.resistance_summary || validation.resistance_summary || "No summary available.";
     const drugImpacts = Array.isArray(hit.drug_impacts) ? hit.drug_impacts : [];
     const impactText = drugImpacts.length ? drugImpacts.join(", ") : "n/a";
+    const limitationsAndFixes =
+      hit.limitations_and_fixes ||
+      validation.limitations_and_fixes ||
+      "No limitations/fixes explanation available.";
 
     tr.style.animationDelay = `${i * 40}ms`;
     tr.innerHTML = `
@@ -135,6 +139,7 @@ function renderResults(hits, report = null) {
             <p><strong>Summary:</strong> ${escapeHtml(resistanceSummary)}</p>
             <p><strong>Drug Impacts:</strong> ${escapeHtml(impactText)}</p>
             <p><strong>Reasoning:</strong> ${escapeHtml(reasoningText)}</p>
+            <p><strong>Limitations & Fixes:</strong> ${escapeHtml(limitationsAndFixes)}</p>
           </div>
         </details>
       </td>
