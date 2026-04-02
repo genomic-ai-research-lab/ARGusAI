@@ -71,6 +71,10 @@ class DiamondRunner(AlignmentTool):
             "bitscore",
         ]
 
+        # DIAMOND defaults to a small target cap if not explicitly overridden.
+        if self.max_hits is not None:
+            cmd.extend(["--max-target-seqs", str(self.max_hits)])
+
         logger.info("Starting DIAMOND alignment")
         completed = subprocess.run(cmd, capture_output=True, text=True)
         if completed.returncode != 0:
