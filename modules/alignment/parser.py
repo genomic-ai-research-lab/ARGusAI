@@ -20,14 +20,20 @@ def parse_diamond_tsv(tsv_path: str, max_hits: int | None = None) -> list[Candid
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.reader(handle, delimiter="\t")
         for row in reader:
-            if len(row) < 12:
+            if len(row) < 14:
                 continue
 
             query_id = row[0]
             subject_id = row[1]
             identity_pct = float(row[2])
+            alignment_length = int(float(row[3]))
             e_value = float(row[10])
             bit_score = float(row[11])
+            subject_length = int(float(row[13]))
+
+            coverage_pct = 0.0
+            if subject_length > 0:
+                coverage_pct = min(100.0, (alignment_length / subject_length) * 100.0)
 
             subject_gene = _extract_subject_gene(subject_id)
 
@@ -37,6 +43,9 @@ def parse_diamond_tsv(tsv_path: str, max_hits: int | None = None) -> list[Candid
                     identity_pct=identity_pct,
                     e_value=e_value,
                     alignment_score=bit_score,
+                    coverage_pct=coverage_pct,
+                    alignment_length=alignment_length,
+                    subject_length=subject_length,
                     raw_subject_id=subject_id,
                 )
             )

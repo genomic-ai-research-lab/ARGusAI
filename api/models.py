@@ -32,14 +32,22 @@ class StatusResponse(BaseModel):
 class HitResponse(BaseModel):
     gene_id: str
     identity_pct: float
+    coverage_pct: float = 0.0
     e_value: float
     alignment_score: float
+    alignment_length: int = 0
+    subject_length: int = 0
     raw_subject_id: str
+    alignment_confidence: float = 0.0
+    llm_confidence: float = 0.0
+    final_confidence: float = 0.0
     is_valid_hit: bool = False
-    confidence: int = 0
+    validation_class: str = "Review Required"
+    reasoning: str = ""
     resistance_summary: str = ""
     drug_impacts: list[str] = Field(default_factory=list)
     limitations_and_fixes: str = ""
+    context: dict[str, object] = Field(default_factory=dict)
 
 
 class ResultsResponse(BaseModel):

@@ -677,6 +677,89 @@ select option {
   font-variant-numeric: tabular-nums;
 }
 
+.results-toolbar {
+  margin: -6px 0 12px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.confidence-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.confidence-filter input {
+  accent-color: var(--accent-sky);
+}
+
+.histogram-card {
+  margin-bottom: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.histogram-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.confidence-histogram {
+  min-height: 170px;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+}
+
+.confidence-histogram.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  min-height: 110px;
+  font-size: 12px;
+}
+
+.hist-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 160px;
+}
+
+.hist-bar {
+  width: 100%;
+  max-width: 28px;
+  border-radius: 6px 6px 2px 2px;
+  background: var(--grad-teal);
+  border: 1px solid rgba(45, 212, 191, 0.45);
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.18);
+}
+
+.hist-count {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  min-height: 14px;
+}
+
+.hist-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
 /* ---------- Table ---------- */
 .table-wrap {
   overflow-x: auto;
@@ -703,6 +786,11 @@ select option {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.download-actions {
+  display: inline-flex;
+  gap: 6px;
 }
 
 .output-title {
@@ -853,13 +941,25 @@ tbody td:nth-child(7) {
   white-space: nowrap;
 }
 
-.validation-pill.valid {
+.validation-pill.class-confirmed {
   color: #86efac;
   border-color: rgba(52, 211, 153, 0.32);
   background: rgba(52, 211, 153, 0.12);
 }
 
-.validation-pill.invalid {
+.validation-pill.class-probable {
+  color: #67e8f9;
+  border-color: rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.validation-pill.class-review {
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.validation-pill.class-unlikely {
   color: #fca5a5;
   border-color: rgba(248, 113, 113, 0.35);
   background: rgba(248, 113, 113, 0.12);
