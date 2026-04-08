@@ -197,6 +197,21 @@
           </div>
         </div>
 
+        <div class="results-toolbar">
+          <label class="confidence-filter" for="highConfidenceOnly">
+            <input id="highConfidenceOnly" type="checkbox" />
+            Show high-confidence hits only (final confidence >= 70)
+          </label>
+        </div>
+
+        <div class="histogram-card">
+          <div class="histogram-header">
+            <h3 class="output-title">Confidence Distribution</h3>
+            <p class="card-desc">Final confidence histogram across detected hits</p>
+          </div>
+          <div id="confidenceHistogram" class="confidence-histogram empty">Run the pipeline to view confidence distribution.</div>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead>
@@ -234,7 +249,7 @@
                 <th>
                   <span class="th-inner">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                    Validation
+                    Class
                   </span>
                 </th>
                 <th>
@@ -272,7 +287,10 @@
           <article class="output-card">
             <div class="output-header">
               <h3 class="output-title">JSON Report</h3>
-              <button id="downloadJsonBtn" class="download-btn" type="button" disabled>Download</button>
+              <div class="download-actions">
+                <button id="downloadCsvBtn" class="download-btn" type="button" disabled>Download CSV</button>
+                <button id="downloadJsonBtn" class="download-btn" type="button" disabled>Download JSON</button>
+              </div>
             </div>
             <pre id="jsonReport" class="output-pre mono">{
   "message": "No report yet"

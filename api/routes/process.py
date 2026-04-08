@@ -5,11 +5,13 @@ from __future__ import annotations
 from dataclasses import asdict
 import logging
 from importlib import import_module
+import time
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 from api.job_store import job_store
 from api.models import ProcessRequest, ProcessResponse
+from api.rate_limit import enforce_rate_limit
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -69,7 +71,7 @@ def _run_alignment_only(job_id: str, evalue: float, program: str) -> tuple[list[
         "mode": "alignment-only",
         "fasta_filename": record.filename,
         "total_hits": len(hits),
-        "skipped_stages": ["retrieval", "reasoning", "report_generation"],
+        "skipped_stages": ["scoring", "retrieval", "reasoning", "fusion", "reporting"],
     }
     text_summary = f"Alignment completed. Candidate hits: {len(hits)}."
     return hits, report, text_summary
@@ -83,7 +85,7 @@ def _run_pipeline_job(job_id: str, evalue: float, program: str) -> None:
         return
 
     logger.info("Job %s started (program=%s, evalue=%s)", job_id, program, evalue)
-    job_store.update(job_id, status="running", stage="alignment")
+    job_store.update(job_id, status="running", stage="initializing")
     try:
         runner_cls, unavailable_reason = _load_pipeline_runner()
         if runner_cls is not None:
@@ -91,7 +93,9 @@ def _run_pipeline_job(job_id: str, evalue: float, program: str) -> None:
                 job_store.update(job_id, stage=stage)
                 logger.info("Job %s stage -> %s", job_id, stage)
 
+            init_started = time.perf_counter()
             runner = runner_cls()
+            logger.info("Job %s pipeline initialized in %.2fs", job_id, time.perf_counter() - init_started)
             result = runner.run(
                 run_id=job_id,
                 fasta_path=record.fasta_path,
@@ -125,12 +129,15 @@ def _run_pipeline_job(job_id: str, evalue: float, program: str) -> None:
         logger.info("Job %s completed with %d hits (alignment-only mode)", job_id, len(hits))
     except Exception as exc:
         logger.exception("Job %s failed", job_id)
-        job_store.update(job_id, status="error", stage="alignment", error=str(exc))
+        failed_stage = (job_store.get(job_id).stage if job_store.get(job_id) else "failed")
+        job_store.update(job_id, status="error", stage=failed_stage, error=str(exc))
 
 
 @router.post("/process/{job_id}", response_model=ProcessResponse)
 async def process_job(job_id: str, request: ProcessRequest, tasks: BackgroundTasks) -> ProcessResponse:
     """Queue background RAG pipeline processing for uploaded FASTA."""
+
+    enforce_rate_limit("process")
 
     record = job_store.get(job_id)
     if record is None:

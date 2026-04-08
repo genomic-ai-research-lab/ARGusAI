@@ -72,3 +72,38 @@ Open frontend in browser:
 - DIAMOND is the active alignment runner in this implementation.
 - If no configured LLM is available, validation gracefully falls back to a heuristic validator.
 - To use Gemini reasoning, set `GEMINI_API_KEY` and keep `LLM_PROVIDER=gemini`.
+
+## Benchmarking
+
+Run the bundled sample benchmark dataset in one command:
+
+```bash
+python scripts/run_sample_benchmark.py
+```
+
+This writes metrics to:
+
+- `outputs/benchmark/sample_metrics.json`
+
+To enable automatic benchmark output during pipeline runs, configure in `.env`:
+
+- `BENCHMARK_ENABLED=true`
+- `BENCHMARK_TRUTH_PATH=data/benchmark/sample_truth.json`
+- `BENCHMARK_OUTPUT_PATH=outputs/benchmark/benchmark_metrics.json`
+
+## Testing
+
+Run all tests:
+
+```bash
+python -m pytest -q
+```
+
+Included tests now cover:
+
+- Validator fallback behavior (invalid JSON and timeout)
+- Batch validation JSON parsing
+- FASTA validation edge cases
+- JSON report snapshot drift detection
+- API upload/process/status/results end-to-end flow
+- Sample benchmark script output generation

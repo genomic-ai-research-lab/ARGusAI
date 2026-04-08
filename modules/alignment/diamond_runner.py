@@ -69,6 +69,8 @@ class DiamondRunner(AlignmentTool):
             "send",
             "evalue",
             "bitscore",
+            "qlen",
+            "slen",
         ]
 
         # DIAMOND defaults to a small target cap if not explicitly overridden.

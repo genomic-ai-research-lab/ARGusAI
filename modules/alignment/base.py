@@ -14,6 +14,9 @@ class CandidateHit:
     identity_pct: float
     e_value: float
     alignment_score: float
+    coverage_pct: float
+    alignment_length: int
+    subject_length: int
     raw_subject_id: str
 
 
