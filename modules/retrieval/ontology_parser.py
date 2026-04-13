@@ -16,9 +16,10 @@ class GeneContext:
     resistance_mechanism: str
     drug_classes: list[str]
     antibiotics: list[str]
+    similar_contexts: list[str]
 
 
-def parse_gene_context(record: dict[str, str]) -> GeneContext:
+def parse_gene_context(record: dict[str, str], similar_contexts: list[str] | None = None) -> GeneContext:
     """Build a GeneContext from a CARD TSV row-like dictionary."""
 
     description = (record.get("Description") or "").strip()
@@ -33,6 +34,7 @@ def parse_gene_context(record: dict[str, str]) -> GeneContext:
         resistance_mechanism=mechanism,
         drug_classes=drug_classes,
         antibiotics=antibiotics,
+        similar_contexts=similar_contexts or [],
     )
 
 

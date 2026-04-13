@@ -13,6 +13,11 @@ class CardClient:
     def __init__(self, ontology_tsv_path: str) -> None:
         self.ontology_tsv_path = ontology_tsv_path
         self._records = self._load_records(ontology_tsv_path)
+        self._cache: dict[tuple[str, str], dict[str, str] | None] = {}
+
+    @property
+    def records(self) -> list[dict[str, str]]:
+        return self._records
 
     @staticmethod
     def _load_records(path: str) -> list[dict[str, str]]:
@@ -29,12 +34,16 @@ class CardClient:
 
         query_norm = _normalize_gene(query_gene)
         subject_norm = _normalize_gene(subject_id)
+        cache_key = (query_norm, subject_norm)
+        if cache_key in self._cache:
+            return self._cache[cache_key]
 
         if subject_norm:
             for row in self._records:
                 name_norm = _normalize_gene(row.get("Name", ""))
                 short_norm = _normalize_gene(row.get("CARD Short Name", ""))
                 if subject_norm in {name_norm, short_norm}:
+                    self._cache[cache_key] = row
                     return row
 
         if query_norm:
@@ -42,8 +51,10 @@ class CardClient:
                 name_norm = _normalize_gene(row.get("Name", ""))
                 short_norm = _normalize_gene(row.get("CARD Short Name", ""))
                 if query_norm in {name_norm, short_norm}:
+                    self._cache[cache_key] = row
                     return row
 
+        self._cache[cache_key] = None
         return None
 
 
