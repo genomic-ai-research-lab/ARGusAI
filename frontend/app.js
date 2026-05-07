@@ -1,4 +1,4 @@
-import { uploadFile, processJob, getStatus, getResults } from "./api.js?v=20260327-2";
+import { uploadFile, processJob, getStatus, getResults } from "./api.js?v=20260507-1";
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const uploadInput   = document.getElementById("fastaFile");
@@ -19,6 +19,7 @@ const downloadJsonBtn = document.getElementById("downloadJsonBtn");
 const downloadCsvBtn = document.getElementById("downloadCsvBtn");
 const highConfidenceOnly = document.getElementById("highConfidenceOnly");
 const confidenceHistogramEl = document.getElementById("confidenceHistogram");
+const themeToggle = document.getElementById("themeToggle");
 
 const stageAlignment = document.getElementById("stage-alignment");
 const stageRetrieval = document.getElementById("stage-retrieval");
@@ -27,6 +28,79 @@ const stageReasoning = document.getElementById("stage-reasoning");
 let pollTimer = null;
 let latestReport = null;
 let latestHits = [];
+
+const themeStorageKey = "argusai-theme";
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  if (themeToggle) {
+    const isDark = theme === "dark";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.title = isDark ? "Switch to light theme" : "Switch to dark theme";
+  }
+}
+
+function initTheme() {
+  const saved = localStorage.getItem(themeStorageKey);
+  const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+  const initial = saved || (prefersLight ? "light" : "dark");
+  applyTheme(initial);
+}
+
+initTheme();
+
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme") || "dark";
+    const next = current === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem(themeStorageKey, next);
+  });
+}
+
+let copyToastTimer = null;
+
+function showCopyToast(message) {
+  const toast = document.getElementById("copyToast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  if (copyToastTimer) {
+    clearTimeout(copyToastTimer);
+  }
+  copyToastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+    copyToastTimer = null;
+  }, 1400);
+}
+
+document.querySelectorAll(".copy-btn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const targetId = btn.getAttribute("data-copy-target");
+    const target = targetId ? document.getElementById(targetId) : null;
+    if (!target) return;
+
+    const text = target.textContent || "";
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.classList.add("copied");
+      showCopyToast("Copied successfully");
+      setTimeout(() => btn.classList.remove("copied"), 1400);
+    } catch (err) {
+      const range = document.createRange();
+      range.selectNodeContents(target);
+      const selection = window.getSelection();
+      if (!selection) return;
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand("copy");
+      selection.removeAllRanges();
+      btn.classList.add("copied");
+      showCopyToast("Copied successfully");
+      setTimeout(() => btn.classList.remove("copied"), 1400);
+    }
+  });
+});
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function formatEValue(value) {
