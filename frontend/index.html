@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260327-2" />
+    <link rel="stylesheet" href="styles.css?v=20260507-5" />
   </head>
   <body>
 
@@ -37,9 +37,31 @@
             <span class="logo-sub">Resistance Gene Framework</span>
           </div>
         </div>
-        <div class="header-badge">
-          <span class="badge-dot"></span>
-          <span>RAG Pipeline Engine</span>
+        <div class="header-actions">
+          <div class="header-badge">
+            <span class="badge-dot"></span>
+            <span>RAG Pipeline Engine</span>
+          </div>
+          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle theme" title="Switch theme">
+            <span class="theme-icon theme-sun" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"/>
+                <line x1="12" y1="2" x2="12" y2="4"/>
+                <line x1="12" y1="20" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="4" y2="12"/>
+                <line x1="20" y1="12" x2="22" y2="12"/>
+                <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/>
+                <line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/>
+                <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/>
+                <line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>
+              </svg>
+            </span>
+            <span class="theme-icon theme-moon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+              </svg>
+            </span>
+          </button>
         </div>
       </div>
     </header>
@@ -280,6 +302,14 @@
           <article class="output-card">
             <div class="output-header">
               <h3 class="output-title">Natural Language Summary</h3>
+              <div class="output-actions">
+                <button class="copy-btn" type="button" data-copy-target="textSummary" title="Copy summary">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15V5a2 2 0 0 1 2-2h10"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
             <pre id="textSummary" class="output-pre">No summary yet. Run the pipeline to generate reasoning output.</pre>
           </article>
@@ -287,9 +317,17 @@
           <article class="output-card">
             <div class="output-header">
               <h3 class="output-title">JSON Report</h3>
-              <div class="download-actions">
-                <button id="downloadCsvBtn" class="download-btn" type="button" disabled>Download CSV</button>
-                <button id="downloadJsonBtn" class="download-btn" type="button" disabled>Download JSON</button>
+              <div class="output-actions">
+                <button class="copy-btn" type="button" data-copy-target="jsonReport" title="Copy JSON">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15V5a2 2 0 0 1 2-2h10"></path>
+                  </svg>
+                </button>
+                <div class="download-actions">
+                  <button id="downloadCsvBtn" class="download-btn" type="button" disabled>Download CSV</button>
+                  <button id="downloadJsonBtn" class="download-btn" type="button" disabled>Download JSON</button>
+                </div>
               </div>
             </div>
             <pre id="jsonReport" class="output-pre mono">{
@@ -301,7 +339,8 @@
 
     </main>
 
-    <script type="module" src="app.js?v=20260327-2"></script>
+    <div id="copyToast" class="copy-toast-global" role="status" aria-live="polite">Copied successfully</div>
+    <script type="module" src="app.js?v=20260507-3"></script>
     <script>
       // Background canvas animation
       const canvas = document.getElementById('bgCanvas');
