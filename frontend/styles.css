@@ -1264,6 +1264,35 @@ tbody td:nth-child(7) {
   background: rgba(248, 113, 113, 0.12);
 }
 
+[data-theme="light"] .validation-pill {
+  border-width: 1px;
+  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .validation-pill.class-confirmed {
+  color: #14532d;
+  border-color: rgba(34, 197, 94, 0.55);
+  background: rgba(34, 197, 94, 0.18);
+}
+
+[data-theme="light"] .validation-pill.class-probable {
+  color: #0e7490;
+  border-color: rgba(6, 182, 212, 0.55);
+  background: rgba(6, 182, 212, 0.18);
+}
+
+[data-theme="light"] .validation-pill.class-review {
+  color: #92400e;
+  border-color: rgba(245, 158, 11, 0.6);
+  background: rgba(245, 158, 11, 0.2);
+}
+
+[data-theme="light"] .validation-pill.class-unlikely {
+  color: #991b1b;
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.18);
+}
+
 .reasoning-details {
   color: var(--text-secondary);
 }
