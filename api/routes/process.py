@@ -67,6 +67,9 @@ def _run_alignment_only(job_id: str, evalue: float, program: str) -> tuple[list[
 
     raw_hits = alignment_runner.run(record.fasta_path)
     hits = [asdict(hit) for hit in raw_hits]
+    for hit in hits:
+        hit["validation_pathway"] = ["alignment", "alignment_only_heuristic_fallback"]
+        hit["contradiction_flag"] = False
     report = {
         "mode": "alignment-only",
         "fasta_filename": record.filename,

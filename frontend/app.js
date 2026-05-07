@@ -200,6 +200,29 @@ function renderResults(hits, report = null) {
       hit.limitations_and_fixes ||
       validation.limitations_and_fixes ||
       "No limitations/fixes explanation available.";
+      const pathway = Array.isArray(hit.validation_pathway)
+        ? hit.validation_pathway.join(" | ")
+      : "n/a";
+    const contradictionFlag = hit.contradiction_flag ? "yes" : "no";
+    const alternatives = Array.isArray(hit.alternatives) ? hit.alternatives : [];
+    const alternativesHtml = alternatives.length
+      ? `
+        <div class="alt-hits">
+          <p><strong>Alternative hits:</strong></p>
+          <ul>
+            ${alternatives
+              .map((alt) => {
+                const altGene = escapeHtml(alt.gene_id || "unknown");
+                const altScore = Number(alt.alignment_score || 0).toFixed(2);
+                const altConf = Number(alt.alignment_confidence || 0).toFixed(2);
+                const altSubject = escapeHtml(alt.raw_subject_id || "n/a");
+                return `<li>${altGene} · score=${altScore} · conf=${altConf} · ${altSubject}</li>`;
+              })
+              .join("")}
+          </ul>
+        </div>
+      `
+      : "";
 
     tr.style.animationDelay = `${i * 40}ms`;
     tr.innerHTML = `
@@ -214,14 +237,18 @@ function renderResults(hits, report = null) {
           <summary>View</summary>
           <div class="reasoning-body">
             <p><strong>Class:</strong> ${escapeHtml(classifyHit(hit))}</p>
-            <p><strong>Coverage:</strong> ${Number(hit.coverage_pct || 0).toFixed(2)}%</p>
+            <p><strong>Query Coverage:</strong> ${Number(hit.query_coverage || 0).toFixed(2)}%</p>
+            <p><strong>Subject Coverage:</strong> ${Number(hit.subject_coverage || 0).toFixed(2)}%</p>
             <p><strong>Alignment Confidence:</strong> ${Number(hit.alignment_confidence || 0).toFixed(2)}</p>
             <p><strong>LLM Confidence:</strong> ${Number(hit.llm_confidence || 0).toFixed(2)}</p>
             <p><strong>Final Confidence:</strong> ${Number(hit.final_confidence || 0).toFixed(2)}</p>
+            <p><strong>Validation Pathway:</strong> ${escapeHtml(pathway)}</p>
+            <p><strong>Contradiction Flag:</strong> ${contradictionFlag}</p>
             <p><strong>Summary:</strong> ${escapeHtml(resistanceSummary)}</p>
             <p><strong>Drug Impacts:</strong> ${escapeHtml(impactText)}</p>
             <p><strong>Reasoning:</strong> ${escapeHtml(reasoningText)}</p>
             <p><strong>Limitations & Fixes:</strong> ${escapeHtml(limitationsAndFixes)}</p>
+            ${alternativesHtml}
           </div>
         </details>
       </td>
@@ -403,7 +430,8 @@ function buildCsv(hits) {
   const headers = [
     "gene_id",
     "identity_pct",
-    "coverage_pct",
+    "query_coverage",
+    "subject_coverage",
     "e_value",
     "alignment_score",
     "alignment_confidence",
@@ -411,6 +439,8 @@ function buildCsv(hits) {
     "final_confidence",
     "validation_class",
     "raw_subject_id",
+    "aro_accession",
+    "validation_pathway",
     "resistance_summary",
     "drug_impacts",
     "reasoning",
@@ -427,7 +457,8 @@ function buildCsv(hits) {
   const rows = hits.map((hit) => [
     hit.gene_id,
     hit.identity_pct,
-    hit.coverage_pct,
+    hit.query_coverage,
+    hit.subject_coverage,
     hit.e_value,
     hit.alignment_score,
     hit.alignment_confidence,
@@ -435,6 +466,8 @@ function buildCsv(hits) {
     hit.final_confidence,
     classifyHit(hit),
     hit.raw_subject_id,
+    hit.aro_accession,
+    Array.isArray(hit.validation_pathway) ? hit.validation_pathway.join("|") : "",
     hit.resistance_summary,
     Array.isArray(hit.drug_impacts) ? hit.drug_impacts.join("; ") : "",
     hit.reasoning,

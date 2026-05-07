@@ -83,7 +83,7 @@ class DiamondRunner(AlignmentTool):
             logger.error("DIAMOND failed: %s", completed.stderr.strip())
             raise RuntimeError("DIAMOND alignment failed")
 
-        hits = parse_diamond_tsv(out_path, max_hits=self.max_hits)
+        hits = parse_diamond_tsv(out_path, max_hits=self.max_hits, program=self.program)
         logger.info("DIAMOND completed with %d hits", len(hits))
 
         try:

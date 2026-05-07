@@ -14,10 +14,14 @@ class CandidateHit:
     identity_pct: float
     e_value: float
     alignment_score: float
-    coverage_pct: float
     alignment_length: int
+    query_length: int
     subject_length: int
+    query_coverage: float
+    subject_coverage: float
     raw_subject_id: str
+    aro_accession: str | None
+    validation_pathway: list[str]
 
 
 class AlignmentTool(ABC):
