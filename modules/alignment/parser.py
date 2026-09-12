@@ -55,6 +55,8 @@ def parse_diamond_tsv(
             hits.append(
                 CandidateHit(
                     gene_id=subject_gene or query_id,
+                    query_id=query_id,
+                    subject_id=subject_gene or subject_id,
                     identity_pct=identity_pct,
                     e_value=e_value,
                     alignment_score=bit_score,

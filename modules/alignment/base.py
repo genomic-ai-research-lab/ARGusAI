@@ -11,6 +11,8 @@ class CandidateHit:
     """Normalized candidate hit returned by any alignment tool."""
 
     gene_id: str
+    query_id: str
+    subject_id: str
     identity_pct: float
     e_value: float
     alignment_score: float
