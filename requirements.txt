@@ -4,7 +4,7 @@ pydantic
 python-multipart
 python-dotenv
 pandas
-google-generativeai
+google-genai
 openai
 chromadb
 pytest
