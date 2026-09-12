@@ -5,3 +5,7 @@ __pycache__/
 .env
 data/uploads/
 outputs/
+*.pdf
+INSTRUCTIONS.md
+instruction.md
+instructions.md
