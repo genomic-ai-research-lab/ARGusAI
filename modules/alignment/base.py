@@ -11,10 +11,19 @@ class CandidateHit:
     """Normalized candidate hit returned by any alignment tool."""
 
     gene_id: str
+    query_id: str
+    subject_id: str
     identity_pct: float
     e_value: float
     alignment_score: float
+    alignment_length: int
+    query_length: int
+    subject_length: int
+    query_coverage: float
+    subject_coverage: float
     raw_subject_id: str
+    aro_accession: str | None
+    validation_pathway: list[str]
 
 
 class AlignmentTool(ABC):

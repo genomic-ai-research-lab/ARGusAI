@@ -69,6 +69,8 @@ class DiamondRunner(AlignmentTool):
             "send",
             "evalue",
             "bitscore",
+            "qlen",
+            "slen",
         ]
 
         # DIAMOND defaults to a small target cap if not explicitly overridden.
@@ -81,7 +83,7 @@ class DiamondRunner(AlignmentTool):
             logger.error("DIAMOND failed: %s", completed.stderr.strip())
             raise RuntimeError("DIAMOND alignment failed")
 
-        hits = parse_diamond_tsv(out_path, max_hits=self.max_hits)
+        hits = parse_diamond_tsv(out_path, max_hits=self.max_hits, program=self.program)
         logger.info("DIAMOND completed with %d hits", len(hits))
 
         try:

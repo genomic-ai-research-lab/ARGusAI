@@ -34,12 +34,25 @@ class HitResponse(BaseModel):
     identity_pct: float
     e_value: float
     alignment_score: float
+    alignment_length: int = 0
+    query_length: int = 0
+    subject_length: int = 0
+    query_coverage: float = 0.0
+    subject_coverage: float = 0.0
     raw_subject_id: str
+    aro_accession: str | None = None
+    alignment_confidence: float = 0.0
+    llm_confidence: float = 0.0
+    final_confidence: float = 0.0
     is_valid_hit: bool = False
-    confidence: int = 0
+    validation_class: str = "Review Required"
+    contradiction_flag: bool = False
+    validation_pathway: list[str] = Field(default_factory=list)
+    reasoning: str = ""
     resistance_summary: str = ""
     drug_impacts: list[str] = Field(default_factory=list)
     limitations_and_fixes: str = ""
+    context: dict[str, object] = Field(default_factory=dict)
 
 
 class ResultsResponse(BaseModel):
